@@ -1,7 +1,7 @@
 # newtask
 
 A new Flutter project.
-
+#### click in  notregistered to show and hide
 ## Getting Started
 
 This project is a starting point for a Flutter application.
