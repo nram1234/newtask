@@ -1,8 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_intro/flutter_intro.dart';
+import 'package:newtask/pdf_vieww.dart';
 import 'package:newtask/string_conset.dart';
 
 import 'app_color.dart';
+import 'mynewlearn.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +22,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(),
+      home:   MYNewLearn(),
     );
   }
 }
@@ -40,7 +43,45 @@ class _MyHomePageState extends State<MyHomePage> {
     CategoryItem(image: "assets/images/coffee.png", title: "coffee"),
     CategoryItem(image: "assets/images/pizza.png", title: "pizza"),
   ];
+  Intro intro = Intro(
+    /// You can set it true to disable animation
+    noAnimation: false,
 
+    /// The total number of guide pages, must be passed
+    stepCount: 2,
+
+    /// Click on whether the mask is allowed to be closed.
+    maskClosable: true,
+
+    /// When highlight widget is tapped.
+    onHighlightWidgetTap: (introStatus) {
+      print(introStatus);
+    },
+
+    /// The padding of the highlighted area and the widget
+    padding: EdgeInsets.all(8),
+
+    /// Border radius of the highlighted area
+    borderRadius: BorderRadius.all(Radius.circular(4)),
+
+    /// Use the default useDefaultTheme provided by the library to quickly build a guide page
+    /// Need to customize the style and content of the guide page, implement the widgetBuilder method yourself
+    /// * Above version 2.3.0, you can use useAdvancedTheme to have more control over the style of the widget
+    /// * Please see https://github.com/tal-tech/flutter_intro/issues/26
+    widgetBuilder: StepWidgetBuilder.useDefaultTheme(
+      /// Guide page text
+      texts: [
+        'Hello, I\'m Flutter Intro.',
+        'I can help you quickly implement the Step By Step guide in the Flutter project.',
+        'My usage is also very simple, you can quickly learn and use it through example and api documentation.',
+        'In order to quickly implement the guidance, I also provide a set of out-of-the-box themes, I wish you all a happy use, goodbye!',
+      ],
+      /// Button text
+      buttonTextBuilder: (curr, total) {
+        return curr < total - 1 ? 'Next' : 'Finish';
+      },
+    ),
+  );
   @override
   void initState() {
     super.initState();
@@ -48,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
       itemBuyImages.add("assets/images/$i.png");
     }
   }
-
+  Key key=GlobalKey();
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -66,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
           }
         }),
       ),
-      bottomNavigationBar: Directionality(
+      bottomNavigationBar: Directionality(key: intro.keys[1],
         textDirection: TextDirection.rtl,
         child: BottomNavigationBar(
           iconSize: 15,
@@ -114,7 +155,17 @@ class _MyHomePageState extends State<MyHomePage> {
               label: 'المزيد',
             ),  ],
         ),
-      ),
+      ),  floatingActionButton: FloatingActionButton(
+            /// 1st guide
+         key: intro.keys[0],
+            child: const Icon(
+              Icons.play_arrow,
+            ),
+            onPressed: () {
+              intro.start(context);
+            },
+          ),
+
     ));
   }
 
@@ -194,7 +245,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(25),
                       topRight: Radius.circular(25))),
-              height: 250,
+              height: 270,
               width: size.width,
               child: Column(
                 children: [
@@ -269,69 +320,71 @@ class _MyHomePageState extends State<MyHomePage> {
                               topRight: Radius.circular(25))),
                       child: Column(children: [
                         Expanded(
-                          flex: 2,
-                          child: ListView.builder(
-                              itemCount: itemBuyImages.length,
-                              scrollDirection: Axis.horizontal,
-                              itemBuilder: (context, pos) {
-                                return Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: SizedBox(
-                                    width: 100,
-                                    height: 100,
-                                    child: Stack(
-                                      children: [
-                                        Positioned(
-                                          top: 15,
-                                          left: 15,
-                                          child: Container(
-                                              decoration: BoxDecoration(
-                                                  border: Border.all(
-                                                      color: AppColors
-                                                          .backgroundColor)),
-                                              child: Image.asset(
-                                                "assets/images/${pos + 1}.png",
-                                                fit: BoxFit.fill,
-                                                height: 75,
-                                                width: 75,
-                                              )),
-                                        ),
-                                        Positioned(
-                                          left: 25,
-                                          child: Container(
-                                              child: Center(
-                                                  child: Text(
-                                                "${pos + 1}",
-                                                style: TextStyle(
+                          flex: 3,
+                          child: Container(margin: EdgeInsets.only(left: 8,right: 8),
+                            child: ListView.builder(
+                                itemCount: itemBuyImages.length,
+                                scrollDirection: Axis.horizontal,
+                                itemBuilder: (context, pos) {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: SizedBox(
+                                      width: 100,
+                                      height: 100,
+                                      child: Stack(
+                                        children: [
+                                          Positioned(
+                                            top: 15,
+                                            left: 15,
+                                            child: Container(
+                                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(5),
+                                                    border: Border.all(width: 2,
+                                                        color: AppColors
+                                                            .lineColor)),
+                                                child: Image.asset(
+                                                  "assets/images/${pos + 1}.png",
+                                                  fit: BoxFit.fill,
+                                                  height: 75,
+                                                  width: 75,
+                                                )),
+                                          ),
+                                          Positioned(
+                                            left: 25,
+                                            child: Container(
+                                                child: Center(
+                                                    child: Text(
+                                                  "${pos + 1}",
+                                                  style: TextStyle(
+                                                      color: AppColors.white),
+                                                )),
+                                                height: 30,
+                                                width: 30,
+                                                decoration: const BoxDecoration(
+                                                    color:
+                                                        AppColors.backgroundColor,
+                                                    shape: BoxShape.circle)),
+                                          ),
+                                          Positioned(
+                                            left: 0,
+                                            child: Container(
+                                                child: const Icon(Icons.delete,
                                                     color: AppColors.white),
-                                              )),
-                                              height: 30,
-                                              width: 30,
-                                              decoration: const BoxDecoration(
-                                                  color:
-                                                      AppColors.backgroundColor,
-                                                  shape: BoxShape.circle)),
-                                        ),
-                                        Positioned(
-                                          left: 0,
-                                          child: Container(
-                                              child: const Icon(Icons.delete,
-                                                  color: AppColors.white),
-                                              height: 30,
-                                              width: 30,
-                                              decoration: const BoxDecoration(
-                                                  color:
-                                                      AppColors.backGroundIcon,
-                                                  shape: BoxShape.circle)),
-                                        ),
-                                      ],
+                                                height: 30,
+                                                width: 30,
+                                                decoration: const BoxDecoration(
+                                                    color:
+                                                        AppColors.backGroundIcon,
+                                                    shape: BoxShape.circle)),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                );
-                              }),
+                                  );
+                                }),
+                          ),
                         ),
                         Expanded(
-                          flex: 1,
+                          flex: 2,
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Row(
